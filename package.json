@@ -1,0 +1,17 @@
+{
+  "name": "servicenow-ajv-compile",
+  "version": "1.0.0",
+  "description": "Compiles JSON Schema files into standalone ServiceNow Script Includes using AJV",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "^15.3.5",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.3"
+  }
+}

@@ -1,0 +1,1 @@
+var equal = require("fast-deep-equal");

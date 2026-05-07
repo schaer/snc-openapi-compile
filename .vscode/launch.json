@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run pipeline",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/index.js",
+      "env": {
+        "INPUT_DIR": "${workspaceFolder}/input",
+        "OUTPUT_DIR": "${workspaceFolder}/output"
+      },
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Run pipeline (custom dirs)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/index.js",
+      "env": {
+        "INPUT_DIR": "${input:inputDir}",
+        "OUTPUT_DIR": "${input:outputDir}"
+      },
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "inputDir",
+      "type": "promptString",
+      "description": "Input directory (absolute path)",
+      "default": "${workspaceFolder}/input"
+    },
+    {
+      "id": "outputDir",
+      "type": "promptString",
+      "description": "Output directory (absolute path)",
+      "default": "${workspaceFolder}/output"
+    }
+  ]
+}
