@@ -1,0 +1,2243 @@
+{
+  "allOf": [
+    {
+      "properties": {
+        "eventType": {
+          "type": "string"
+        },
+        "eventTime": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z",
+          "example": "2018-07-16T12:38:27.123Z"
+        },
+        "eventId": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-PUB-[a-zA-Z0-9_-]{1,112}$",
+          "example": "CWX-DEU-003-PUB-1531744707827"
+        },
+        "event": {
+          "type": "object"
+        }
+      }
+    },
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "eventType": {
+              "type": "string",
+              "pattern": "TicketCreationNotification",
+              "example": "TicketCreationNotification"
+            },
+            "event": {
+              "additionalProperties": false,
+              "properties": {
+                "troubleTicket": {
+                  "description": "Attributes for creating a new incident (POST-method).",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "description",
+                    "severity",
+                    "type"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "x-custom-comment": "Restricted to federated SMC specific pattern",
+                      "description": "Unique identifier of the incident.",
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-INC-[a-zA-Z0-9_-]{1,112}$",
+                      "example": "TST-MNE-001-INC-BIN1010879"
+                    },
+                    "description": {
+                      "x-custom-comment": "TODO: Still not length limitation?",
+                      "description": "Description of the incident.",
+                      "type": "string",
+                      "example": "This is a test incident"
+                    },
+                    "severity": {
+                      "x-custom-comment": "Restricted to federated SMC specific pattern",
+                      "description": "TM Forum severity corresponds to ITIL incident impact.\n- high - TM Forum severity corresponds to ITIL incident impact. Definition for high: Another MNE is affected and the overall impact is high.\n- medium - Definition for medium: Another MNE is affected and the overall impact is medium or low.\n- low - Definition for high: Another MNE is NOT affected and the local impact is high, medium or low.\n",
+                      "type": "string",
+                      "enum": [
+                        "critical",
+                        "high",
+                        "medium",
+                        "low",
+                        "none"
+                      ],
+                      "example": "medium"
+                    },
+                    "type": {
+                      "description": "Type of incident.",
+                      "type": "string",
+                      "maxLength": 50,
+                      "example": "Failure"
+                    },
+                    "creationDate": {
+                      "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+                      "description": "Creation date of incident.",
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                    },
+                    "relatedParty": {
+                      "allOf": [
+                        {
+                          "x-custom-comment": "Restricted to federated SMC specific key value pairs",
+                          "description": "Extended objects for federated mission network operations.",
+                          "type": "array",
+                          "uniqueItems": true,
+                          "maxItems": 4,
+                          "items": {
+                            "description": "Extended objects for federated mission network operations.",
+                            "type": "object",
+                            "required": [
+                              "role",
+                              "id"
+                            ],
+                            "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "href": {
+                                    "type": "string"
+                                  },
+                                  "role": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "role": {
+                                    "description": "Object type.",
+                                    "type": "string",
+                                    "maxLength": 64
+                                  },
+                                  "id": {
+                                    "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+                                    "type": "string",
+                                    "maxLength": 64
+                                  },
+                                  "href": {
+                                    "description": "URI to specific record or object.",
+                                    "type": "string",
+                                    "maxLength": 4096
+                                  },
+                                  "name": {
+                                    "description": "Human readable value / display name.",
+                                    "type": "string",
+                                    "maxLength": 100
+                                  }
+                                }
+                              },
+                              {
+                                "oneOf": [
+                                  {
+                                    "properties": {
+                                      "role": {
+                                        "type": "string",
+                                        "enum": [
+                                          "originator",
+                                          "owner"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}$",
+                                        "example": "TST-DEU-001"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "role": {
+                                        "type": "string",
+                                        "enum": [
+                                          "assigneeGroup"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "role": {
+                                        "type": "string",
+                                        "enum": [
+                                          "reportingPerson"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "maxLength": 256
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "array",
+                          "minItems": 3
+                        }
+                      ]
+                    },
+                    "relatedObject": {
+                      "allOf": [
+                        {
+                          "x-custom-comment": "Restricted to federated SMC specific key value pairs",
+                          "description": "Extended objects for federated mission network operations.",
+                          "type": "array",
+                          "uniqueItems": true,
+                          "minItems": 4,
+                          "items": {
+                            "description": "Extended attributes for federated mission network operations.",
+                            "type": "object",
+                            "required": [
+                              "involvement",
+                              "id"
+                            ],
+                            "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "involvement": {
+                                    "type": "string"
+                                  },
+                                  "href": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "involvement": {
+                                    "description": "Object type.",
+                                    "type": "string",
+                                    "maxLength": 64
+                                  },
+                                  "id": {
+                                    "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+                                    "type": "string",
+                                    "maxLength": 64
+                                  },
+                                  "href": {
+                                    "description": "URI to specific record or object.",
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "description": "Human readable value / display name.",
+                                    "type": "string",
+                                    "maxLength": 100
+                                  }
+                                }
+                              },
+                              {
+                                "oneOf": [
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "securityPolicy",
+                                          "securityClassification"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "maxLength": 32
+                                      },
+                                      "href": {
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "releasabilityCommunity"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "maxLength": 256,
+                                        "x-custom-comment": "pattern ([A-Z]{3},)*([A-Z]{3}) does not longer fit because of i.e. 'EU EEAS only'",
+                                        "example": "AUS,AUT,CHE,FIN,NZL,SWE"
+                                      },
+                                      "href": {
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "urgency"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "high",
+                                          "medium",
+                                          "low"
+                                        ]
+                                      },
+                                      "href": {
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "csirLabel"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "pattern": "^(CSIR)([1-9]|10)|None$"
+                                      },
+                                      "href": {
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "impactedLocation"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "maxLength": 64,
+                                        "example": "BERLIN"
+                                      },
+                                      "href": {
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "serviceImpact"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "pattern": "[1-5]"
+                                      },
+                                      "href": {
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "isMajorIncident",
+                                          "isCyberSecurityIncident"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "true",
+                                          "false"
+                                        ]
+                                      },
+                                      "href": {
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "impactedService",
+                                          "relatedEvent",
+                                          "relatedIncident",
+                                          "relatedProblem",
+                                          "relatedServiceRequest",
+                                          "relatedFederatedConfigurationItem"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "maxLength": 64,
+                                        "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-(SVC|EVT|INC|PRB|SRQ|FCI)-[a-zA-Z0-9_-]{1,112}$",
+                                        "example": "TST-DEU-001-SRQ-BSR47859"
+                                      },
+                                      "href": {
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "relatedAttachment"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-ATT-[a-zA-Z0-9_-]{1,112}$"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "href": {
+                                        "description": "maxLength is prefix + max. base64 encoded data of size 4 MB (= 13 (prefix) + (4*1024 (KB) * 1024 (Byte) * 8 (bit) / 6 (bits/character)) + 2 (max padding)).",
+                                        "type": "string",
+                                        "maxLength": 5592421,
+                                        "pattern": "^data:;base64,.*"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string",
+                                        "enum": [
+                                          "fsmRecordClass"
+                                        ]
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "INCIDENT"
+                                        ]
+                                      },
+                                      "href": {
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "array",
+                          "minItems": 8
+                        }
+                      ]
+                    },
+                    "note": {
+                      "x-custom-comment": "Restricted to federated SMC specific notes",
+                      "description": "The Note object array contains numerous log entries of the incident. It\nmay contain first diagnosis, progress information and solution\ndescription as note records.\n",
+                      "type": "array",
+                      "uniqueItems": true,
+                      "items": {
+                        "description": "The Note object array contains numerous log entries of the incident. It\nmay contain first diagnosis, progress information and solution\ndescription as note records.\n",
+                        "type": "object",
+                        "required": [
+                          "date",
+                          "author",
+                          "text"
+                        ],
+                        "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted smc properties are valid",
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "date": {
+                                "type": "string",
+                                "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+                                "format": "date-time",
+                                "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                              },
+                              "author": {
+                                "type": "string"
+                              },
+                              "text": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "date": {
+                                "description": "Timestamp, when the note was created",
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                              },
+                              "author": {
+                                "description": "(Email) address of the author",
+                                "type": "string",
+                                "maxLength": 100
+                              },
+                              "text": {
+                                "description": "Text of the note",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "date",
+                              "author",
+                              "text"
+                            ],
+                            "example": {
+                              "date": "2018-02-06T14:17:59.000Z",
+                              "author": "somebody@organization.com",
+                              "text": "Log entry for incident"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "eventType": {
+              "type": "string",
+              "pattern": "TicketChangeNotification",
+              "example": "TicketChangeNotification"
+            },
+            "event": {
+              "additionalProperties": false,
+              "properties": {
+                "troubleTicket": {
+                  "description": "Attributes for updating or appending to a existing incident (PATCH-method).",
+                  "type": "object",
+                  "x-custom-comment": "Following 'oneOf' ensures, that only one of the epcefications fits",
+                  "oneOf": [
+                    {
+                      "description": "Attributes for appending a note to an existing incident (PATCH-method).",
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "x-custom-comment": "Restricted to federated SMC specific pattern",
+                          "description": "Unique identifier of the incident.",
+                          "type": "string",
+                          "maxLength": 64,
+                          "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-INC-[a-zA-Z0-9_-]{1,112}$",
+                          "example": "TST-MNE-001-INC-BIN1010879"
+                        },
+                        "relatedParty": {
+                          "allOf": [
+                            {
+                              "x-custom-comment": "Restricted to federated SMC specific key value pairs",
+                              "description": "Extended objects for federated mission network operations.",
+                              "type": "array",
+                              "uniqueItems": true,
+                              "maxItems": 4,
+                              "items": {
+                                "description": "Extended objects for federated mission network operations.",
+                                "type": "object",
+                                "required": [
+                                  "role",
+                                  "id"
+                                ],
+                                "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+                                "allOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "href": {
+                                        "type": "string"
+                                      },
+                                      "role": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "role": {
+                                        "description": "Object type.",
+                                        "type": "string",
+                                        "maxLength": 64
+                                      },
+                                      "id": {
+                                        "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+                                        "type": "string",
+                                        "maxLength": 64
+                                      },
+                                      "href": {
+                                        "description": "URI to specific record or object.",
+                                        "type": "string",
+                                        "maxLength": 4096
+                                      },
+                                      "name": {
+                                        "description": "Human readable value / display name.",
+                                        "type": "string",
+                                        "maxLength": 100
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "oneOf": [
+                                      {
+                                        "properties": {
+                                          "role": {
+                                            "type": "string",
+                                            "enum": [
+                                              "originator",
+                                              "owner"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}$",
+                                            "example": "TST-DEU-001"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "role": {
+                                            "type": "string",
+                                            "enum": [
+                                              "assigneeGroup"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "maxLength": 64
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "role": {
+                                            "type": "string",
+                                            "enum": [
+                                              "reportingPerson"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "maxLength": 256
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "type": "array",
+                              "minItems": 2,
+                              "maxItems": 2
+                            }
+                          ]
+                        },
+                        "relatedObject": {
+                          "allOf": [
+                            {
+                              "x-custom-comment": "Restricted to federated SMC specific key value pairs",
+                              "description": "Extended objects for federated mission network operations.",
+                              "type": "array",
+                              "uniqueItems": true,
+                              "minItems": 4,
+                              "items": {
+                                "description": "Extended attributes for federated mission network operations.",
+                                "type": "object",
+                                "required": [
+                                  "involvement",
+                                  "id"
+                                ],
+                                "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+                                "allOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "involvement": {
+                                        "type": "string"
+                                      },
+                                      "href": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "involvement": {
+                                        "description": "Object type.",
+                                        "type": "string",
+                                        "maxLength": 64
+                                      },
+                                      "id": {
+                                        "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+                                        "type": "string",
+                                        "maxLength": 64
+                                      },
+                                      "href": {
+                                        "description": "URI to specific record or object.",
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "description": "Human readable value / display name.",
+                                        "type": "string",
+                                        "maxLength": 100
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "oneOf": [
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "securityPolicy",
+                                              "securityClassification"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "maxLength": 32
+                                          },
+                                          "href": {
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "releasabilityCommunity"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "maxLength": 256,
+                                            "x-custom-comment": "pattern ([A-Z]{3},)*([A-Z]{3}) does not longer fit because of i.e. 'EU EEAS only'",
+                                            "example": "AUS,AUT,CHE,FIN,NZL,SWE"
+                                          },
+                                          "href": {
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "urgency"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "enum": [
+                                              "high",
+                                              "medium",
+                                              "low"
+                                            ]
+                                          },
+                                          "href": {
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "csirLabel"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "pattern": "^(CSIR)([1-9]|10)|None$"
+                                          },
+                                          "href": {
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "impactedLocation"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "maxLength": 64,
+                                            "example": "BERLIN"
+                                          },
+                                          "href": {
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "serviceImpact"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "pattern": "[1-5]"
+                                          },
+                                          "href": {
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "isMajorIncident",
+                                              "isCyberSecurityIncident"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "enum": [
+                                              "true",
+                                              "false"
+                                            ]
+                                          },
+                                          "href": {
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "impactedService",
+                                              "relatedEvent",
+                                              "relatedIncident",
+                                              "relatedProblem",
+                                              "relatedServiceRequest",
+                                              "relatedFederatedConfigurationItem"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "maxLength": 64,
+                                            "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-(SVC|EVT|INC|PRB|SRQ|FCI)-[a-zA-Z0-9_-]{1,112}$",
+                                            "example": "TST-DEU-001-SRQ-BSR47859"
+                                          },
+                                          "href": {
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "relatedAttachment"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-ATT-[a-zA-Z0-9_-]{1,112}$"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "href": {
+                                            "description": "maxLength is prefix + max. base64 encoded data of size 4 MB (= 13 (prefix) + (4*1024 (KB) * 1024 (Byte) * 8 (bit) / 6 (bits/character)) + 2 (max padding)).",
+                                            "type": "string",
+                                            "maxLength": 5592421,
+                                            "pattern": "^data:;base64,.*"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string",
+                                            "enum": [
+                                              "fsmRecordClass"
+                                            ]
+                                          },
+                                          "id": {
+                                            "type": "string",
+                                            "enum": [
+                                              "INCIDENT"
+                                            ]
+                                          },
+                                          "href": {
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "type": "array",
+                              "minItems": 4,
+                              "maxItems": 5
+                            }
+                          ]
+                        },
+                        "note": {
+                          "x-custom-comment": "Restricted to federated SMC specific notes",
+                          "description": "The Note object array contains numerous log entries of the incident. It\nmay contain first diagnosis, progress information and solution\ndescription as note records.\n",
+                          "type": "array",
+                          "uniqueItems": true,
+                          "items": {
+                            "description": "The Note object array contains numerous log entries of the incident. It\nmay contain first diagnosis, progress information and solution\ndescription as note records.\n",
+                            "type": "object",
+                            "required": [
+                              "date",
+                              "author",
+                              "text"
+                            ],
+                            "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted smc properties are valid",
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "date": {
+                                    "type": "string",
+                                    "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+                                    "format": "date-time",
+                                    "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                                  },
+                                  "author": {
+                                    "type": "string"
+                                  },
+                                  "text": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "date": {
+                                    "description": "Timestamp, when the note was created",
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                                  },
+                                  "author": {
+                                    "description": "(Email) address of the author",
+                                    "type": "string",
+                                    "maxLength": 100
+                                  },
+                                  "text": {
+                                    "description": "Text of the note",
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "date",
+                                  "author",
+                                  "text"
+                                ],
+                                "example": {
+                                  "date": "2018-02-06T14:17:59.000Z",
+                                  "author": "somebody@organization.com",
+                                  "text": "Log entry for incident"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "description": "For all states without 'Resolved' and 'Cancelled' without additional mandatory attributes",
+                      "allOf": [
+                        {
+                          "description": "Attributes for updating a existing incident (PATCH-method).",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "status"
+                          ],
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "x-custom-comment": "Restricted to federated SMC specific pattern",
+                              "description": "Unique identifier of the incident.",
+                              "type": "string",
+                              "maxLength": 64,
+                              "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-INC-[a-zA-Z0-9_-]{1,112}$",
+                              "example": "TST-MNE-001-INC-BIN1010879"
+                            },
+                            "description": {
+                              "x-custom-comment": "TODO: Still not length limitation?",
+                              "description": "Description of the incident.",
+                              "type": "string",
+                              "example": "This is a test incident"
+                            },
+                            "severity": {
+                              "x-custom-comment": "Restricted to federated SMC specific pattern",
+                              "description": "TM Forum severity corresponds to ITIL incident impact.\n- high - TM Forum severity corresponds to ITIL incident impact. Definition for high: Another MNE is affected and the overall impact is high.\n- medium - Definition for medium: Another MNE is affected and the overall impact is medium or low.\n- low - Definition for high: Another MNE is NOT affected and the local impact is high, medium or low.\n",
+                              "type": "string",
+                              "enum": [
+                                "critical",
+                                "high",
+                                "medium",
+                                "low",
+                                "none"
+                              ],
+                              "example": "medium"
+                            },
+                            "type": {
+                              "description": "Type of incident.",
+                              "type": "string",
+                              "maxLength": 50,
+                              "example": "Failure"
+                            },
+                            "targetResolutionDate": {
+                              "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                            },
+                            "status": {
+                              "x-custom-comment": "Restricted to federated SMC specific status values. InProgressHeld and InProgressPending are moved to new property 'subStatus'",
+                              "description": "The current status of the incident. If the status is \"InProgress\" the\nsubStatus field might be used to indicated a pending situation.\n- Submitted - The initial state of an Incident when created by a TT\noriginator.\n- Rejected - The Trouble Ticket was rejected because it:\n  - is not submitted\n  - provides invalid information\n  - fails to meet the Business Rules in respect of the Product which originator is raising a Trouble Ticket against\n  - is otherwise defective\n- Acknowledged - The Incident was accepted and allocated a unique\nIncident ID by the Incident handler.\n- InProgress - The Incident was validated by the Incident handler and is\nbeing processed.\n- Resolved - The Fault indicated in the Incident was corrected by the\nIncident handler and acknowledgement is awaited from its originator.\n- Closed - The Incident originator has acknowledged the Resolved\nstate of the Incident, or the timeframe (default value 14 days) for\nacknowledgement has passed without response from TT originator.\n- Cancelled - The Incident which was sent from the originator to the\nIncident handler was technically formatted correctly and was wherefore\nacknowledged in first place, but the content on the Incident is\ninadequate. Therefore, the Incident handler rejects to work on this\nIncident.  Reasons for Incident cancellation are:\n  - wrongly assigned\n  - information provided is inadequate.\n",
+                              "type": "string",
+                              "enum": [
+                                "Submitted",
+                                "Rejected",
+                                "Acknowledged",
+                                "InProgress",
+                                "Resolved",
+                                "Closed",
+                                "Cancelled"
+                              ],
+                              "example": "Submitted"
+                            },
+                            "subStatus": {
+                              "x-custom-comment": "At specification time of the SIP document it was not known, that the Open SPI specification file is the 'master' of all specification documents for TM Forum",
+                              "description": "The current sub status of the incident.\n- Held - The Incident handler is awaiting further confirmation on\ndetails of a Fault from originator before it can progress the Fault. An\nexample is where Appointment information is required.\n- Pending - The Incident handler is confirming further details\ninternally before completing an Incident.  An example is where Incident\nhandler for network infrastructure spare parts to progress with the\nFault rectification.\n",
+                              "type": "string",
+                              "enum": [
+                                "Held",
+                                "Pending"
+                              ],
+                              "example": "Held"
+                            },
+                            "resolutionDate": {
+                              "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                            },
+                            "relatedParty": {
+                              "allOf": [
+                                {
+                                  "x-custom-comment": "Restricted to federated SMC specific key value pairs",
+                                  "description": "Extended objects for federated mission network operations.",
+                                  "type": "array",
+                                  "uniqueItems": true,
+                                  "maxItems": 4,
+                                  "items": {
+                                    "description": "Extended objects for federated mission network operations.",
+                                    "type": "object",
+                                    "required": [
+                                      "role",
+                                      "id"
+                                    ],
+                                    "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+                                    "allOf": [
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "href": {
+                                            "type": "string"
+                                          },
+                                          "role": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "role": {
+                                            "description": "Object type.",
+                                            "type": "string",
+                                            "maxLength": 64
+                                          },
+                                          "id": {
+                                            "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+                                            "type": "string",
+                                            "maxLength": 64
+                                          },
+                                          "href": {
+                                            "description": "URI to specific record or object.",
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          },
+                                          "name": {
+                                            "description": "Human readable value / display name.",
+                                            "type": "string",
+                                            "maxLength": 100
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "oneOf": [
+                                          {
+                                            "properties": {
+                                              "role": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "originator",
+                                                  "owner"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}$",
+                                                "example": "TST-DEU-001"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "role": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "assigneeGroup"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 64
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "role": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "reportingPerson"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 256
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "type": "array",
+                                  "minItems": 2,
+                                  "maxItems": 3
+                                }
+                              ]
+                            },
+                            "relatedObject": {
+                              "allOf": [
+                                {
+                                  "x-custom-comment": "Restricted to federated SMC specific key value pairs",
+                                  "description": "Extended objects for federated mission network operations.",
+                                  "type": "array",
+                                  "uniqueItems": true,
+                                  "minItems": 4,
+                                  "items": {
+                                    "description": "Extended attributes for federated mission network operations.",
+                                    "type": "object",
+                                    "required": [
+                                      "involvement",
+                                      "id"
+                                    ],
+                                    "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+                                    "allOf": [
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string"
+                                          },
+                                          "href": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "involvement": {
+                                            "description": "Object type.",
+                                            "type": "string",
+                                            "maxLength": 64
+                                          },
+                                          "id": {
+                                            "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+                                            "type": "string",
+                                            "maxLength": 64
+                                          },
+                                          "href": {
+                                            "description": "URI to specific record or object.",
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "description": "Human readable value / display name.",
+                                            "type": "string",
+                                            "maxLength": 100
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "oneOf": [
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "securityPolicy",
+                                                  "securityClassification"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 32
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "releasabilityCommunity"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 256,
+                                                "x-custom-comment": "pattern ([A-Z]{3},)*([A-Z]{3}) does not longer fit because of i.e. 'EU EEAS only'",
+                                                "example": "AUS,AUT,CHE,FIN,NZL,SWE"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "urgency"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "high",
+                                                  "medium",
+                                                  "low"
+                                                ]
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "csirLabel"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "pattern": "^(CSIR)([1-9]|10)|None$"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "impactedLocation"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 64,
+                                                "example": "BERLIN"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "serviceImpact"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "pattern": "[1-5]"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "isMajorIncident",
+                                                  "isCyberSecurityIncident"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "true",
+                                                  "false"
+                                                ]
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "impactedService",
+                                                  "relatedEvent",
+                                                  "relatedIncident",
+                                                  "relatedProblem",
+                                                  "relatedServiceRequest",
+                                                  "relatedFederatedConfigurationItem"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 64,
+                                                "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-(SVC|EVT|INC|PRB|SRQ|FCI)-[a-zA-Z0-9_-]{1,112}$",
+                                                "example": "TST-DEU-001-SRQ-BSR47859"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "relatedAttachment"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-ATT-[a-zA-Z0-9_-]{1,112}$"
+                                              },
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "href": {
+                                                "description": "maxLength is prefix + max. base64 encoded data of size 4 MB (= 13 (prefix) + (4*1024 (KB) * 1024 (Byte) * 8 (bit) / 6 (bits/character)) + 2 (max padding)).",
+                                                "type": "string",
+                                                "maxLength": 5592421,
+                                                "pattern": "^data:;base64,.*"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "fsmRecordClass"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "INCIDENT"
+                                                ]
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "type": "array",
+                                  "minItems": 4
+                                }
+                              ]
+                            },
+                            "note": {
+                              "x-custom-comment": "Restricted to federated SMC specific notes",
+                              "description": "The Note object array contains numerous log entries of the incident. It\nmay contain first diagnosis, progress information and solution\ndescription as note records.\n",
+                              "type": "array",
+                              "uniqueItems": true,
+                              "items": {
+                                "description": "The Note object array contains numerous log entries of the incident. It\nmay contain first diagnosis, progress information and solution\ndescription as note records.\n",
+                                "type": "object",
+                                "required": [
+                                  "date",
+                                  "author",
+                                  "text"
+                                ],
+                                "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted smc properties are valid",
+                                "allOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "date": {
+                                        "type": "string",
+                                        "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+                                        "format": "date-time",
+                                        "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                                      },
+                                      "author": {
+                                        "type": "string"
+                                      },
+                                      "text": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "date": {
+                                        "description": "Timestamp, when the note was created",
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                                      },
+                                      "author": {
+                                        "description": "(Email) address of the author",
+                                        "type": "string",
+                                        "maxLength": 100
+                                      },
+                                      "text": {
+                                        "description": "Text of the note",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "date",
+                                      "author",
+                                      "text"
+                                    ],
+                                    "example": {
+                                      "date": "2018-02-06T14:17:59.000Z",
+                                      "author": "somebody@organization.com",
+                                      "text": "Log entry for incident"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "description": "ToDo",
+                              "type": "string",
+                              "enum": [
+                                "Submitted",
+                                "Rejected",
+                                "Acknowledged",
+                                "InProgress",
+                                "Closed"
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "description": "For the states 'Resolved' and 'Cancelled' with additional mandatory attributes",
+                      "allOf": [
+                        {
+                          "description": "Attributes for updating a existing incident (PATCH-method).",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "status"
+                          ],
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "x-custom-comment": "Restricted to federated SMC specific pattern",
+                              "description": "Unique identifier of the incident.",
+                              "type": "string",
+                              "maxLength": 64,
+                              "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-INC-[a-zA-Z0-9_-]{1,112}$",
+                              "example": "TST-MNE-001-INC-BIN1010879"
+                            },
+                            "description": {
+                              "x-custom-comment": "TODO: Still not length limitation?",
+                              "description": "Description of the incident.",
+                              "type": "string",
+                              "example": "This is a test incident"
+                            },
+                            "severity": {
+                              "x-custom-comment": "Restricted to federated SMC specific pattern",
+                              "description": "TM Forum severity corresponds to ITIL incident impact.\n- high - TM Forum severity corresponds to ITIL incident impact. Definition for high: Another MNE is affected and the overall impact is high.\n- medium - Definition for medium: Another MNE is affected and the overall impact is medium or low.\n- low - Definition for high: Another MNE is NOT affected and the local impact is high, medium or low.\n",
+                              "type": "string",
+                              "enum": [
+                                "critical",
+                                "high",
+                                "medium",
+                                "low",
+                                "none"
+                              ],
+                              "example": "medium"
+                            },
+                            "type": {
+                              "description": "Type of incident.",
+                              "type": "string",
+                              "maxLength": 50,
+                              "example": "Failure"
+                            },
+                            "targetResolutionDate": {
+                              "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                            },
+                            "status": {
+                              "x-custom-comment": "Restricted to federated SMC specific status values. InProgressHeld and InProgressPending are moved to new property 'subStatus'",
+                              "description": "The current status of the incident. If the status is \"InProgress\" the\nsubStatus field might be used to indicated a pending situation.\n- Submitted - The initial state of an Incident when created by a TT\noriginator.\n- Rejected - The Trouble Ticket was rejected because it:\n  - is not submitted\n  - provides invalid information\n  - fails to meet the Business Rules in respect of the Product which originator is raising a Trouble Ticket against\n  - is otherwise defective\n- Acknowledged - The Incident was accepted and allocated a unique\nIncident ID by the Incident handler.\n- InProgress - The Incident was validated by the Incident handler and is\nbeing processed.\n- Resolved - The Fault indicated in the Incident was corrected by the\nIncident handler and acknowledgement is awaited from its originator.\n- Closed - The Incident originator has acknowledged the Resolved\nstate of the Incident, or the timeframe (default value 14 days) for\nacknowledgement has passed without response from TT originator.\n- Cancelled - The Incident which was sent from the originator to the\nIncident handler was technically formatted correctly and was wherefore\nacknowledged in first place, but the content on the Incident is\ninadequate. Therefore, the Incident handler rejects to work on this\nIncident.  Reasons for Incident cancellation are:\n  - wrongly assigned\n  - information provided is inadequate.\n",
+                              "type": "string",
+                              "enum": [
+                                "Submitted",
+                                "Rejected",
+                                "Acknowledged",
+                                "InProgress",
+                                "Resolved",
+                                "Closed",
+                                "Cancelled"
+                              ],
+                              "example": "Submitted"
+                            },
+                            "subStatus": {
+                              "x-custom-comment": "At specification time of the SIP document it was not known, that the Open SPI specification file is the 'master' of all specification documents for TM Forum",
+                              "description": "The current sub status of the incident.\n- Held - The Incident handler is awaiting further confirmation on\ndetails of a Fault from originator before it can progress the Fault. An\nexample is where Appointment information is required.\n- Pending - The Incident handler is confirming further details\ninternally before completing an Incident.  An example is where Incident\nhandler for network infrastructure spare parts to progress with the\nFault rectification.\n",
+                              "type": "string",
+                              "enum": [
+                                "Held",
+                                "Pending"
+                              ],
+                              "example": "Held"
+                            },
+                            "resolutionDate": {
+                              "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                            },
+                            "relatedParty": {
+                              "allOf": [
+                                {
+                                  "x-custom-comment": "Restricted to federated SMC specific key value pairs",
+                                  "description": "Extended objects for federated mission network operations.",
+                                  "type": "array",
+                                  "uniqueItems": true,
+                                  "maxItems": 4,
+                                  "items": {
+                                    "description": "Extended objects for federated mission network operations.",
+                                    "type": "object",
+                                    "required": [
+                                      "role",
+                                      "id"
+                                    ],
+                                    "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+                                    "allOf": [
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "href": {
+                                            "type": "string"
+                                          },
+                                          "role": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "role": {
+                                            "description": "Object type.",
+                                            "type": "string",
+                                            "maxLength": 64
+                                          },
+                                          "id": {
+                                            "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+                                            "type": "string",
+                                            "maxLength": 64
+                                          },
+                                          "href": {
+                                            "description": "URI to specific record or object.",
+                                            "type": "string",
+                                            "maxLength": 4096
+                                          },
+                                          "name": {
+                                            "description": "Human readable value / display name.",
+                                            "type": "string",
+                                            "maxLength": 100
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "oneOf": [
+                                          {
+                                            "properties": {
+                                              "role": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "originator",
+                                                  "owner"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}$",
+                                                "example": "TST-DEU-001"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "role": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "assigneeGroup"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 64
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "role": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "reportingPerson"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 256
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "type": "array",
+                                  "minItems": 2,
+                                  "maxItems": 3
+                                }
+                              ]
+                            },
+                            "relatedObject": {
+                              "allOf": [
+                                {
+                                  "x-custom-comment": "Restricted to federated SMC specific key value pairs",
+                                  "description": "Extended objects for federated mission network operations.",
+                                  "type": "array",
+                                  "uniqueItems": true,
+                                  "minItems": 4,
+                                  "items": {
+                                    "description": "Extended attributes for federated mission network operations.",
+                                    "type": "object",
+                                    "required": [
+                                      "involvement",
+                                      "id"
+                                    ],
+                                    "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+                                    "allOf": [
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "involvement": {
+                                            "type": "string"
+                                          },
+                                          "href": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "involvement": {
+                                            "description": "Object type.",
+                                            "type": "string",
+                                            "maxLength": 64
+                                          },
+                                          "id": {
+                                            "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+                                            "type": "string",
+                                            "maxLength": 64
+                                          },
+                                          "href": {
+                                            "description": "URI to specific record or object.",
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "description": "Human readable value / display name.",
+                                            "type": "string",
+                                            "maxLength": 100
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "oneOf": [
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "securityPolicy",
+                                                  "securityClassification"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 32
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "releasabilityCommunity"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 256,
+                                                "x-custom-comment": "pattern ([A-Z]{3},)*([A-Z]{3}) does not longer fit because of i.e. 'EU EEAS only'",
+                                                "example": "AUS,AUT,CHE,FIN,NZL,SWE"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "urgency"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "high",
+                                                  "medium",
+                                                  "low"
+                                                ]
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "csirLabel"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "pattern": "^(CSIR)([1-9]|10)|None$"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "impactedLocation"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 64,
+                                                "example": "BERLIN"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "serviceImpact"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "pattern": "[1-5]"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "isMajorIncident",
+                                                  "isCyberSecurityIncident"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "true",
+                                                  "false"
+                                                ]
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "impactedService",
+                                                  "relatedEvent",
+                                                  "relatedIncident",
+                                                  "relatedProblem",
+                                                  "relatedServiceRequest",
+                                                  "relatedFederatedConfigurationItem"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "maxLength": 64,
+                                                "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-(SVC|EVT|INC|PRB|SRQ|FCI)-[a-zA-Z0-9_-]{1,112}$",
+                                                "example": "TST-DEU-001-SRQ-BSR47859"
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "relatedAttachment"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-ATT-[a-zA-Z0-9_-]{1,112}$"
+                                              },
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "href": {
+                                                "description": "maxLength is prefix + max. base64 encoded data of size 4 MB (= 13 (prefix) + (4*1024 (KB) * 1024 (Byte) * 8 (bit) / 6 (bits/character)) + 2 (max padding)).",
+                                                "type": "string",
+                                                "maxLength": 5592421,
+                                                "pattern": "^data:;base64,.*"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "properties": {
+                                              "involvement": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "fsmRecordClass"
+                                                ]
+                                              },
+                                              "id": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "INCIDENT"
+                                                ]
+                                              },
+                                              "href": {
+                                                "type": "string",
+                                                "maxLength": 4096
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "type": "array",
+                                  "minItems": 4
+                                }
+                              ]
+                            },
+                            "note": {
+                              "x-custom-comment": "Restricted to federated SMC specific notes",
+                              "description": "The Note object array contains numerous log entries of the incident. It\nmay contain first diagnosis, progress information and solution\ndescription as note records.\n",
+                              "type": "array",
+                              "uniqueItems": true,
+                              "items": {
+                                "description": "The Note object array contains numerous log entries of the incident. It\nmay contain first diagnosis, progress information and solution\ndescription as note records.\n",
+                                "type": "object",
+                                "required": [
+                                  "date",
+                                  "author",
+                                  "text"
+                                ],
+                                "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted smc properties are valid",
+                                "allOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "date": {
+                                        "type": "string",
+                                        "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+                                        "format": "date-time",
+                                        "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                                      },
+                                      "author": {
+                                        "type": "string"
+                                      },
+                                      "text": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "date": {
+                                        "description": "Timestamp, when the note was created",
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+                                      },
+                                      "author": {
+                                        "description": "(Email) address of the author",
+                                        "type": "string",
+                                        "maxLength": 100
+                                      },
+                                      "text": {
+                                        "description": "Text of the note",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "date",
+                                      "author",
+                                      "text"
+                                    ],
+                                    "example": {
+                                      "date": "2018-02-06T14:17:59.000Z",
+                                      "author": "somebody@organization.com",
+                                      "text": "Log entry for incident"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "description",
+                            "severity",
+                            "type",
+                            "resolutionDate"
+                          ],
+                          "properties": {
+                            "status": {
+                              "description": "ToDo",
+                              "type": "string",
+                              "enum": [
+                                "Resolved",
+                                "Cancelled"
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "example": {
+    "eventType": "TicketChangeNotification",
+    "eventTime": "2014-09-27T05:46:25.0Z",
+    "eventId": "ISF-NCI-001-PUB-00000302",
+    "event": {
+      "troubleTicket": {
+        "id": "CWX-DEU-001-INC-20190209141244",
+        "description": "Sample incident for test with soapUI::Incident details containing more characters",
+        "severity": "high",
+        "type": "Network",
+        "targetResolutionDate": "2018-04-22T13:44:33.000Z",
+        "status": "InProgress",
+        "subStatus": "Pending",
+        "relatedParty": [
+          {
+            "role": "assigneeGroup",
+            "id": "CWX-DEU-002-Group"
+          }
+        ],
+        "relatedObject": [
+          {
+            "involvement": "securityPolicy",
+            "id": "CWIX18"
+          },
+          {
+            "involvement": "securityClassification",
+            "id": "UNCLASSIFIED"
+          },
+          {
+            "involvement": "releasabilityCommunity",
+            "id": "AUS,AUT,CHE,FIN,NZL,SWE,UKR,EU EEAS only"
+          },
+          {
+            "involvement": "csirLabel",
+            "id": "CSIR9"
+          },
+          {
+            "involvement": "urgency",
+            "id": "high"
+          },
+          {
+            "involvement": "serviceImpact",
+            "id": "3"
+          },
+          {
+            "involvement": "isMajorIncident",
+            "id": "false"
+          },
+          {
+            "involvement": "isCyberSecurityIncident",
+            "id": "false"
+          },
+          {
+            "involvement": "impactedLocation",
+            "id": "Bydgoszcz"
+          },
+          {
+            "involvement": "relatedEvent",
+            "href": "http://testsrv.fsmcdeu.selfhost.eu/SMC/eventManagement/v4.0/event/CWX-DEU-002-EVT-00000001",
+            "id": "CWX-DEU-002-EVT-00000001"
+          },
+          {
+            "involvement": "relatedIncident",
+            "href": "http://testsrv.fsmcdeu.selfhost.eu/SMC/troubleTicketManagement/v4.0/troubleTicket/CWX-DEU-001-INC-00000001",
+            "id": "CWX-DEU-001-INC-00000001"
+          },
+          {
+            "involvement": "relatedProblem",
+            "href": "http://testsrv.fsmcdeu.selfhost.eu/SMC/problemManagement/v4.0/problem/CWX-DEU-002-PRB-00000001",
+            "id": "CWX-DEU-002-PRB-00000001"
+          },
+          {
+            "involvement": "relatedServiceRequest",
+            "href": "http://testsrv.fsmcdeu.selfhost.eu/SMC/serviceOrderingManagement/v4.0/serviceOrder/CWX-DEU-002-SRQ-00000001",
+            "id": "CWX-DEU-002-SRQ-00000001"
+          },
+          {
+            "involvement": "relatedFederatedConfigurationItem",
+            "href": "http://testsrv.fsmcdeu.selfhost.eu/SMC/configurationManagement/v4.0/configurationItem/CWX-DEU-002-FCI-00000001",
+            "id": "CWX-DEU-002-FCI-00000001"
+          },
+          {
+            "involvement": "relatedFederatedConfigurationItem",
+            "id": "CWX-DEU-001-FCI-01234567890123456789"
+          },
+          {
+            "involvement": "relatedAttachment",
+            "id": "CWX-DEU-001-INC-20190209141244-ATT-000001",
+            "name": "Testfile1.txt",
+            "href": "VGhpcyBpcyBvbmx5IGEgdGVzdCBmaWxlIHNlbmQgYXMgYXR0YWNobWVudCBmb3IgYW4gaW5jaWRlbnQu"
+          },
+          {
+            "involvement": "relatedAttachment",
+            "id": "CWX-DEU-001-INC-20190209141244-ATT-000001",
+            "name": "Testfile2.txt",
+            "href": "VGhpcyBpcyBvbmx5IGEgdGVzdCBmaWxlIHNlbmQgYXMgYXR0YWNobWVudCBmb3IgYW4gaW5jaWRlbnQu"
+          },
+          {
+            "involvement": "fsmRecordClass",
+            "id": "INCIDENT"
+          }
+        ],
+        "note": [
+          {
+            "date": "2019-02-09T11:22:33.000Z",
+            "author": "CWIX-Demo-Account",
+            "text": "Ticket created by soapUI test request"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+      "format": "date-time",
+      "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+    },
+    "author": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    }
+  }
+}

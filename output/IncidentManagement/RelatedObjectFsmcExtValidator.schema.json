@@ -1,0 +1,256 @@
+{
+  "description": "Extended attributes for federated mission network operations.",
+  "type": "object",
+  "required": [
+    "involvement",
+    "id"
+  ],
+  "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "involvement": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "involvement": {
+          "description": "Object type.",
+          "type": "string",
+          "maxLength": 64
+        },
+        "id": {
+          "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+          "type": "string",
+          "maxLength": 64
+        },
+        "href": {
+          "description": "URI to specific record or object.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Human readable value / display name.",
+          "type": "string",
+          "maxLength": 100
+        }
+      }
+    },
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "securityPolicy",
+                "securityClassification"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 32
+            },
+            "href": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        },
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "releasabilityCommunity"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 256,
+              "x-custom-comment": "pattern ([A-Z]{3},)*([A-Z]{3}) does not longer fit because of i.e. 'EU EEAS only'",
+              "example": "AUS,AUT,CHE,FIN,NZL,SWE"
+            },
+            "href": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        },
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "urgency"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            },
+            "href": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        },
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "csirLabel"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^(CSIR)([1-9]|10)|None$"
+            },
+            "href": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        },
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "impactedLocation"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 64,
+              "example": "BERLIN"
+            },
+            "href": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        },
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "serviceImpact"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "pattern": "[1-5]"
+            },
+            "href": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        },
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "isMajorIncident",
+                "isCyberSecurityIncident"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "href": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        },
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "impactedService",
+                "relatedEvent",
+                "relatedIncident",
+                "relatedProblem",
+                "relatedServiceRequest",
+                "relatedFederatedConfigurationItem"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-(SVC|EVT|INC|PRB|SRQ|FCI)-[a-zA-Z0-9_-]{1,112}$",
+              "example": "TST-DEU-001-SRQ-BSR47859"
+            },
+            "href": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        },
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "relatedAttachment"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-ATT-[a-zA-Z0-9_-]{1,112}$"
+            },
+            "name": {
+              "type": "string"
+            },
+            "href": {
+              "description": "maxLength is prefix + max. base64 encoded data of size 4 MB (= 13 (prefix) + (4*1024 (KB) * 1024 (Byte) * 8 (bit) / 6 (bits/character)) + 2 (max padding)).",
+              "type": "string",
+              "maxLength": 5592421,
+              "pattern": "^data:;base64,.*"
+            }
+          }
+        },
+        {
+          "properties": {
+            "involvement": {
+              "type": "string",
+              "enum": [
+                "fsmRecordClass"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "enum": [
+                "INCIDENT"
+              ]
+            },
+            "href": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

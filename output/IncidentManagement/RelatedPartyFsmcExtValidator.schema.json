@@ -1,0 +1,95 @@
+{
+  "description": "Extended objects for federated mission network operations.",
+  "type": "object",
+  "required": [
+    "role",
+    "id"
+  ],
+  "x-custom-comment": "Following 'allOf' ensures, that a) the original specification must be valid and b) more restricted common smc properties are valid and c) more restricted key-specific smc property values are valid",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "href": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "description": "Object type.",
+          "type": "string",
+          "maxLength": 64
+        },
+        "id": {
+          "description": "Contains a value. If href is filled, FSMID of the specific record\nor object otherwise the value itself.\n",
+          "type": "string",
+          "maxLength": 64
+        },
+        "href": {
+          "description": "URI to specific record or object.",
+          "type": "string",
+          "maxLength": 4096
+        },
+        "name": {
+          "description": "Human readable value / display name.",
+          "type": "string",
+          "maxLength": 100
+        }
+      }
+    },
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "role": {
+              "type": "string",
+              "enum": [
+                "originator",
+                "owner"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}$",
+              "example": "TST-DEU-001"
+            }
+          }
+        },
+        {
+          "properties": {
+            "role": {
+              "type": "string",
+              "enum": [
+                "assigneeGroup"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 64
+            }
+          }
+        },
+        {
+          "properties": {
+            "role": {
+              "type": "string",
+              "enum": [
+                "reportingPerson"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "description": "Attributes for response of creating a new incident (POST-method).",
+  "type": "object",
+  "required": [
+    "id",
+    "description",
+    "severity",
+    "type",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "x-custom-comment": "Restricted to federated SMC specific pattern",
+      "description": "Unique identifier of the incident.",
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-INC-[a-zA-Z0-9_-]{1,112}$",
+      "example": "TST-MNE-001-INC-BIN1010879"
+    },
+    "description": {
+      "x-custom-comment": "TODO: Still not length limitation?",
+      "description": "Description of the incident.",
+      "type": "string",
+      "example": "This is a test incident"
+    },
+    "severity": {
+      "x-custom-comment": "Restricted to federated SMC specific pattern",
+      "description": "TM Forum severity corresponds to ITIL incident impact.\n- high - TM Forum severity corresponds to ITIL incident impact. Definition for high: Another MNE is affected and the overall impact is high.\n- medium - Definition for medium: Another MNE is affected and the overall impact is medium or low.\n- low - Definition for high: Another MNE is NOT affected and the local impact is high, medium or low.\n",
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "none"
+      ],
+      "example": "medium"
+    },
+    "type": {
+      "description": "Type of incident.",
+      "type": "string",
+      "maxLength": 50,
+      "example": "Failure"
+    },
+    "creationDate": {
+      "x-custom-comment": "changed from 'date' to 'date-time' due to service interface profile",
+      "description": "Creation date of incident.",
+      "type": "string",
+      "format": "date-time",
+      "pattern": "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{3}Z"
+    },
+    "status": {
+      "x-custom-comment": "Restricted to federated SMC specific status values. InProgressHeld and InProgressPending are moved to new property 'subStatus'",
+      "description": "The current status of the incident. If the status is \"InProgress\" the\nsubStatus field might be used to indicated a pending situation.\n- Submitted - The initial state of an Incident when created by a TT\noriginator.\n- Rejected - The Trouble Ticket was rejected because it:\n  - is not submitted\n  - provides invalid information\n  - fails to meet the Business Rules in respect of the Product which originator is raising a Trouble Ticket against\n  - is otherwise defective\n- Acknowledged - The Incident was accepted and allocated a unique\nIncident ID by the Incident handler.\n- InProgress - The Incident was validated by the Incident handler and is\nbeing processed.\n- Resolved - The Fault indicated in the Incident was corrected by the\nIncident handler and acknowledgement is awaited from its originator.\n- Closed - The Incident originator has acknowledged the Resolved\nstate of the Incident, or the timeframe (default value 14 days) for\nacknowledgement has passed without response from TT originator.\n- Cancelled - The Incident which was sent from the originator to the\nIncident handler was technically formatted correctly and was wherefore\nacknowledged in first place, but the content on the Incident is\ninadequate. Therefore, the Incident handler rejects to work on this\nIncident.  Reasons for Incident cancellation are:\n  - wrongly assigned\n  - information provided is inadequate.\n",
+      "type": "string",
+      "enum": [
+        "Submitted",
+        "Rejected",
+        "Acknowledged",
+        "InProgress",
+        "Resolved",
+        "Closed",
+        "Cancelled"
+      ],
+      "example": "Submitted"
+    }
+  }
+}
