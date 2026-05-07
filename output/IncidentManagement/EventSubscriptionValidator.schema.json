@@ -1,0 +1,29 @@
+{
+  "required": [
+    "id",
+    "callback"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Id of the listener",
+      "maxLength": 64,
+      "pattern": "^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{3}-SUB-[a-zA-Z0-9_-]{1,112}$",
+      "example": "CWX-DEU-001-SUB-20190240141155"
+    },
+    "callback": {
+      "type": "string",
+      "description": "The callback being registered",
+      "maxLength": 4096,
+      "example": "http://testsrv.fsmcdeu.selfhost.eu:80/SMC/troubleTicketManagement/v4.0/listener"
+    },
+    "query": {
+      "type": "string",
+      "nullable": true,
+      "description": "additional data to be passed",
+      "maxLength": 4096,
+      "example": "id.regex=.*"
+    }
+  }
+}
